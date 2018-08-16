@@ -181,3 +181,7 @@ tr:hover td{
 }
 
 .pagination a:hover:not(.active) {background-color: #ddd;}
+
+.mal {
+  font-family: 'Manjari';
+}
