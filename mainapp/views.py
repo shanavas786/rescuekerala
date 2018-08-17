@@ -16,6 +16,8 @@ from django.db.models import Count
 from django.core.cache import cache
 from django.conf import settings
 
+from collections import OrderedDict
+
 class CreateRequest(CreateView):
     model = Request
     template_name='mainapp/request_form.html'
@@ -219,7 +221,7 @@ class PersonForm(forms.ModelForm):
         'address',
         'notes'
         ]
-       
+
        widgets = {
            'address': forms.Textarea(attrs={'rows':3}),
            'notes': forms.Textarea(attrs={'rows':3}),
@@ -236,7 +238,7 @@ class PersonForm(forms.ModelForm):
 class AddPerson(SuccessMessageMixin,LoginRequiredMixin,CreateView):
     login_url = '/login/'
     model = Person
-    template_name='mainapp/add_person.html'  
+    template_name='mainapp/add_person.html'
     form_class = PersonForm
     success_url = '/add_person/'
     success_message = "'%(name)s' registered successfully"
@@ -251,18 +253,16 @@ class PeopleFilter(django_filters.FilterSet):
 
     class Meta:
         model = Person
-        fields = {
-            'name' : ['icontains'],
-            'phone' : ['icontains'],
-            'address' : ['icontains'],
-            'district' : ['exact'],
-            'notes':['icontains'],
-            'gender':['exact'],
-            'camped_at':['exact']
-        }
 
-        # TODO - field order seems to not be working!
-        # field_order = ['name', 'phone', 'address','district','notes','gender','camped_at']
+        fields = OrderedDict([
+            ('name', ['icontains']),
+            ('phone', ['icontains']),
+            ('address', ['icontains']),
+            ('district', ['exact']),
+            ('notes', ['icontains']),
+            ('gender', ['exact']),
+            ('camped_at', ['exact']),
+        ])
 
     def __init__(self, *args, **kwargs):
         super(PeopleFilter, self).__init__(*args, **kwargs)
