@@ -1,73 +1,6 @@
 {% extends 'base.html' %}
 {% load bootstrap3 %}
-
-{% block css %}
-<style>
-  .table{
-    table-layout: fixed;
-  }
-
-  .table td{
-    word-wrap: break-word;
-  }
-  #req-summary { margin-top: 15px; }
-  .modal-body .row { padding: 5px 0 }
-</style>
-<style>
-  @media only screen and (max-width: 800px)  {
-
-		#requests-table table, thead, tbody, th, td, tr {
-			display: block;
-		}
-
-		#requests-table thead tr {
-			position: absolute;
-			top: -9999px;
-			left: -9999px;
-		}
-
-    #requests-table tr {
-      margin: 0 0 1rem 0;
-    }
-
-    #requests-table tr:nth-child(odd) {
-      background: #ccc;
-    }
-
-		#requests-table td {
-			/* Behave  like a "row" */
-			border: none;
-			border-bottom: 1px solid #eee;
-			position: relative;
-			padding-left: 50%;
-		}
-
-		#requests-table td:before {
-			/* Now like a table header */
-			position: absolute;
-			/* Top/left values mimic padding */
-			top: 0;
-			left: 6px;
-			width: 45%;
-			padding-right: 10px;
-			white-space: normal;
-		}
-    #requests-table td:nth-of-type(1):before { content: "Request Number - അപേക്ഷ നമ്പര്‍"; }
-    #requests-table td:nth-of-type(2):before { content: "District - ജില്ല"; }
-    #requests-table td:nth-of-type(3):before { content: "Location - സ്ഥലം"; }
-    #requests-table td:nth-of-type(4):before { content: "Requestee - അപേക്ഷകന്‍റെ പേര്"; }
-    #requests-table td:nth-of-type(5):before { content: "Phone - ഫോണ്‍ നമ്പര്‍"; }
-    #requests-table td:nth-of-type(6):before { content: "Date - തീയതി"; }
-    #requests-table td:nth-of-type(9):before { content: "More details - കൂടുതൽ വിശദാംശങ്ങൾ"; }
-  }
-  @media only screen and (max-width: 420px)  {
-		#requests-table td {
-      min-height: 60px;
-		}
-  }
-
-</style>
-{% endblock %}
+{% load static %}
 
 {% block content %}
 <!--Navigation Breadcrumbs-->
@@ -187,64 +120,8 @@
 
    </div>
  </div>
+ {% endblock %}
 
- <script>
-   const iDist = 1
-   const iLoc = 2
-   const iRequestee = 3
-   const iContact = 4
-   const iDate = 5
-   const iGps = 6
-   const iSummary = 7
-
-   window.addEventListener("load", function() {
-     $("input.search").keyup(search);
-     $(".show-details").click(showDetails);
-   })
-
-   function showDetails(evt) {
-     var tds = $(evt.target).parent().siblings()
-     var dist = tds.eq(iDist).text().toLowerCase()
-     var loc = tds.eq(iLoc).text().toLowerCase()
-     var requestee = tds.eq(iRequestee).text().toLowerCase()
-     var phone = tds.eq(iContact).html()
-     var date = tds.eq(iDate).text()
-     var gps = tds.eq(iGps).html()
-     var summary = tds.eq(iSummary).html()
-
-     $("#req-dist").text(dist)
-     $("#req-loc").text(loc)
-     $("#req-requestee").text(requestee)
-     $("#req-contact").html(phone)
-     $("#req-date").text(date)
-     $("#req-gps").html(gps)
-     $("#req-summary").html(summary)
-
-     $("#req-details").modal("show")
-   }
-
-   function search() {
-     $("#req-table").find("tr").each(function(i,el) {
-       // skip header row
-       if (i == 0) return
-       el = $(el)
-       var tds = el.find("td")
-       var loc = tds.eq(iLoc).text().toLowerCase()
-       var requestee = tds.eq(iRequestee).text().toLowerCase()
-       var phone = tds.eq(iContact).text()
-       var locKey = $("#search-loc").val().toLowerCase()
-       var reqKey = $("#search-requestee").val().toLowerCase()
-       var phoneKey = $("#search-phone").val()
-
-       if (loc.includes(locKey) &&
-           requestee.includes(reqKey) &&
-           phone.includes(phoneKey))
-         {
-           el.show()
-         } else {
-           el.hide()
-         }
-   })
-   }
- </script>
+ {% block javascript %}
+ <script src="{% static 'js/request-list.js' %}" async defer></script>
  {% endblock %}
