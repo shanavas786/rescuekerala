@@ -10,14 +10,14 @@
   <meta http-equiv="X-UA-Compatible" content="IE=edge" />
   <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1, user-scalable=no">
 
-  <meta property="og:title" content="Kerala Rescue">
   <meta property="og:site_name" content="Kerala Rescue">
   <meta property="og:url" content="https://www.keralarescue.in/">
-  <meta property="og:description" content="Help out those affected by the Kerala floods by donating or volunteering">
+  {% block pagespecs %}
+    <meta property="og:description" content="Help out those affected by the Kerala floods by donating or volunteering">
+    <title>Kerala Rescue</title>
+  {% endblock %}
   <meta property="og:type" content="website">
   <meta property="og:image" content="{% static 'images/keralarescue.png' %}">
-
-  <title>Kerala Rescue</title>
 
   {# <link rel="shortcut icon" type="image/png" href="{% static 'images/favicon.png' %}"/> #}
 

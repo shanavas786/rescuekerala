@@ -4,7 +4,7 @@ import io
 from django.test import TestCase, Client
 from django.urls import reverse
 
-from mainapp.models import Request, Volunteer, Contributor, NGO, DistrictNeed, RescueCamp
+from mainapp.models import Request, Volunteer, Contributor, NGO, DistrictNeed, RescueCamp, Hospital
 
 
 class TemplateViewTests(TestCase):
@@ -492,3 +492,51 @@ class ReliefCampsDataTest(TestCase):
                          'meta']['description'], 'select * from mainapp_rescuecamp where id > offset order by id limit 300')
         self.assertEqual(response.json()['meta']['last_record_id'], 500)
         # RescueCamp.objects.all().delete()
+
+
+
+class HospitalsDataTest(TestCase):
+    def setUp(self):
+        self.url = '/hospitals/'
+
+    def test_empty_query(self):
+        client = Client()
+        response = client.get(self.url)
+        self.assertTemplateUsed(response, 'mainapp/hospitals.html')
+        self.assertIn('select name="district"', str(
+            response.context['filter'].form))
+
+    def test_query_params(self):
+        client = Client()
+        bulk_entries = []
+        for i in range(110):
+            bulk_entries.append(Hospital(**{
+                    'name': 'adoor public hospital -' + str(i),
+                    'district': 'ptm',
+                    'officer': 'doc-' + str(i),
+                    'designation': 'CDI',
+                    'landline': '91029122' + str(i),
+                    'mobile': '99012931' + str(i),
+                    'email': 'someone+' + str(i) + '@random.org'
+            }))
+        _ = Hospital.objects.bulk_create(bulk_entries)
+
+        # Default List
+        response = client.get(self.url)
+        self.assertTemplateUsed(response, 'mainapp/hospitals.html')
+        self.assertEqual(len(response.context['object_list']), 50)
+
+        # Empty List
+        response = client.get(self.url, {'district':'tcr'})
+        self.assertTemplateUsed(response, 'mainapp/hospitals.html')
+        self.assertEqual(len(response.context['object_list']), 0)
+
+        # Filtered List
+        response = client.get(self.url, {'district': 'ptm'})
+        self.assertTemplateUsed(response, 'mainapp/hospitals.html')
+        self.assertEqual(len(response.context['object_list']), 50)
+
+        # Paginated List
+        response = client.get(self.url, {'page': 3})
+        self.assertTemplateUsed(response, 'mainapp/hospitals.html')
+        self.assertEqual(len(response.context['object_list']), 10)

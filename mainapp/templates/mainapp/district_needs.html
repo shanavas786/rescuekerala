@@ -18,9 +18,10 @@
       <th>District</th>
       <th>Items required</th>
       <th>Contacts & Collection points</th>
+      <th>Inventory</th>
+	  <th></th>
     </tr>
   {% for item in district_data %}
-    <!-- Ernakulam -->
     <tr valign="top">
       <td><strong>{{item.get_district_display}}</strong></td>
       <td>
@@ -29,8 +30,38 @@
       <td>
         {{item.cnandpts|linebreaks}}
       </td>
+      <td>
+        {{item.inventory|linebreaks}}
+      </td>
+	  <td>
+		<button class="btn btn-primary" onclick="copy_content_or_share(this);">Share/Copy</button>
+	  </td>
     </tr>
     {% endfor %}
   </table>
 </div>
+<script>
+function copy_content_or_share(elem) {
+	var ths = document.getElementsByTagName('th');
+	var copy_text = '';
+	var tds = elem.parentElement.parentElement.childNodes;
+	for(var i = 0;i<tds.length-1;i++) {
+		copy_text = copy_text+ths[i].innerText.toUpperCase()+'\n\n'+tds[i].innerText+'\n\n';
+	}
+	var tempInput = document.createElement("textarea");
+    tempInput.style = "position: absolute; left: -1000px; top: -1000px";
+    tempInput.innerHTML = copy_text;
+    document.body.appendChild(tempInput);
+    tempInput.select();
+    document.execCommand("copy");
+    document.body.removeChild(tempInput);
+	if (navigator.share) {
+	navigator.share({
+      text: copy_text
+	})
+    .then(() => console.log('Successful share'))
+    .catch((error) => console.log('Error sharing', error));
+	}
+}
+</script>
 {% endblock %}

@@ -44,30 +44,62 @@
     {% endfor %}
     </table>
 
+
+ {% if inside_kerala  %} 
     {% if is_paginated %}
 
         <div class="pagination" >
             <span class="step-links">
                 {% if page_obj.has_previous %}
-                    <a href="{% url 'collection_centers_list' %}?page=1">&laquo; first</a>
-                    <a href="{% url 'collection_centers_list' %}?page={{ page_obj.previous_page_number }}">previous</a>
+                    <a href="{% url 'collection_centers_list' location='inside_kerala' %}?page=1">&laquo; first</a>
+                    <a href="{% url 'collection_centers_list' location='inside_kerala' %}?page={{ page_obj.previous_page_number }}">previous</a>
                 {% endif %}
 
                 {% for i in page_obj.paginator.page_range %}
                     {% if page_obj.number == i %}
                         <a class="active"><span>{{ i }} <span class="sr-only">(current)</span></span></a>
                     {% elif i > page_obj.min_page and i < page_obj.max_page or i|divisibleby:data.lim_page %}
-                        <a href="{% url 'collection_centers_list' %}?page={{ i }}">{{ i }}</a>
+                        <a href="{% url 'collection_centers_list' location='inside_kerala' %}?page={{ i }}">{{ i }}</a>
                     {% endif %}
                 {% endfor %}
 
                 {% if page_obj.has_next %}
-                    <a href="{% url 'collection_centers_list' %}?page={{ page_obj.next_page_number }}">next</a>
-                    <a href="{% url 'collection_centers_list' %}?page={{ page_obj.paginator.num_pages }}">last &raquo;</a>
+                    <a href="{% url 'collection_centers_list' location='inside_kerala' %}?page={{ page_obj.next_page_number }}">next</a>
+                    <a href="{% url 'collection_centers_list' location='inside_kerala' %}?page={{ page_obj.paginator.num_pages }}">last &raquo;</a>
                 {% endif %}
             </span>
         </div>
     {% endif %}
+ {% else %}
+   {% if is_paginated %}
+
+        <div class="pagination" >
+            <span class="step-links">
+                {% if page_obj.has_previous %}
+                    <a href="{% url 'collection_centers_list' location='outside_kerala' %}?page=1">&laquo; first</a>
+                    <a href="{% url 'collection_centers_list' location='outside_kerala' %}?page={{ page_obj.previous_page_number }}">previous</a>
+                {% endif %}
+
+                {% for i in page_obj.paginator.page_range %}
+                    {% if page_obj.number == i %}
+                        <a class="active"><span>{{ i }} <span class="sr-only">(current)</span></span></a>
+                    {% elif i > page_obj.min_page and i < page_obj.max_page or i|divisibleby:data.lim_page %}
+                        <a href="{% url 'collection_centers_list' location='outside_kerala' %}?page={{ i }}">{{ i }}</a>
+                    {% endif %}
+                {% endfor %}
+
+                {% if page_obj.has_next %}
+                    <a href="{% url 'collection_centers_list' location='outside_kerala' %}?page={{ page_obj.next_page_number }}">next</a>
+                    <a href="{% url 'collection_centers_list' location='outside_kerala' %}?page={{ page_obj.paginator.num_pages }}">last &raquo;</a>
+                {% endif %}
+            </span>
+        </div>
+    {% endif %}
+ 
+
+ {% endif %}
+
+
 
 </div>
 {% endblock %}

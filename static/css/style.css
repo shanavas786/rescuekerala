@@ -286,8 +286,8 @@ table thead tr th {
 .card.priority-high{border-color:#ef7831;}
     .card.priority-high .card-priority{background-color:#ef7831;}
 
-.card.priority-medium{border-color:#7ab754;}
-    .card.priority-medium .card-priority{background-color:#7ab754;}
+.card.priority-medium{border-color:#ffc107;}
+    .card.priority-medium .card-priority{background-color:#ffc107;}
 
 .card.priority-low{border-color:#286090;}
     .card.priority-low .card-priority{background-color:#286090;}

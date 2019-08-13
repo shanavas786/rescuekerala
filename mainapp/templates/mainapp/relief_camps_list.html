@@ -44,7 +44,7 @@
         {{ item.name }}
       </td>
       <td>
-        {% if item.map_link %} <a href="{{ item.map_link}}">Map Link</a> {% else %} N/A {% endif %}
+        {% if item.map_link %} <a href="{{ item.map_link}}" target="_blank" >Map Link</a> {% else %} N/A {% endif %}
       </td>
       <td>
         {{ item.location | linebreaks }}

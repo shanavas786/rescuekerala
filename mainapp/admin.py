@@ -9,7 +9,8 @@ from django.http import StreamingHttpResponse
 from mainapp.redis_queue import bulk_csv_upload_queue
 from mainapp.csvimporter import import_inmate_file
 from .models import Request, Volunteer, Contributor, DistrictNeed, DistrictCollection, DistrictManager, vol_categories, \
-    RescueCamp, Person, NGO, Announcements, DataCollection , PrivateRescueCamp , CollectionCenter, CsvBulkUpload, RequestUpdate
+    RescueCamp, Person, NGO, Announcements, DataCollection , PrivateRescueCamp , CollectionCenter, CsvBulkUpload, RequestUpdate, \
+    Hospital
 
 """
 Helper function for streaming csv downloads
@@ -22,7 +23,7 @@ class Echo:
         return value
 
 
-"""A view that streams a large CSV file."""
+"""A Function that streams a large CSV file."""
 def create_streaming_csv_response(header_row, queryset, filename):
     # header_row = ('name', 'phone', 'age', 'sex', 'district_name', 'camped_at', 'status')
     objects = queryset.all()
@@ -92,6 +93,7 @@ class VolunteerAdmin(admin.ModelAdmin):
     readonly_fields = ('joined',)
     list_display = ('name', 'phone', 'organisation', 'joined', 'is_active')
     list_filter = ('district', 'joined', 'is_active', 'has_consented', 'area')
+    search_fields = ['name','phone','area']
 
     def download_csv(self, request, queryset):
         header_row = [f.name for f in Volunteer._meta.get_fields()]
@@ -118,6 +120,7 @@ class NGOAdmin(admin.ModelAdmin):
     readonly_fields = ('joined',)
     list_display = ('name', 'phone', 'organisation', 'joined')
     list_filter = ('district', 'joined',)
+    search_fields = ['name','phone','area','location']
 
     def download_csv(self, request, queryset):
         header_row = [f.name for f in NGO._meta.get_fields()]
@@ -134,8 +137,9 @@ class NGOAdmin(admin.ModelAdmin):
 
 class ContributorAdmin(admin.ModelAdmin):
     actions = ['download_csv', 'mark_as_fullfulled', 'mark_as_new']
-    list_filter = ('district', 'status',)
+    list_filter = ('district', 'status','contribution_type')
     list_display = ('district', 'name', 'phone', 'address', 'contrib_details', 'status')
+    search_fields = ['name']
 
     def download_csv(self, request, queryset):
         header_row = [f.name for f in Contributor._meta.get_fields()]
@@ -209,8 +213,9 @@ class RescueCampAdmin(admin.ModelAdmin):
 
 
 class AnnouncementAdmin(admin.ModelAdmin):
-    fields = ['is_pinned', 'priority', 'description', 'image', 'upload']
-
+    fields = ['is_pinned', 'priority', 'hashtags', 'description', 'image', 'upload']
+    list_filter = ('priority','is_pinned')
+    search_fields = ['hashtags','description']
 
 class PersonAdmin(admin.ModelAdmin):
     actions = ['download_csv', 'stream_csv']
@@ -242,10 +247,49 @@ class PersonAdmin(admin.ModelAdmin):
 
 class DataCollectionAdmin(admin.ModelAdmin):
     list_display = ['document_name', 'document', 'tag']
+    search_fields = ['document_name']
 
+class DistrictCollectionAdmin(admin.ModelAdmin):
+    list_filter = ('district',)
+    search_fields = ['collection']
+
+class DistrictManagerAdmin(admin.ModelAdmin):
+    list_filter = ('district',)
+    search_fields = ['name','email']
+
+class DistrictNeedAdmin(admin.ModelAdmin):
+    list_filter = ('district',)
+    search_fields = ['needs','cnandpts']
+        
 
 class RequestUpdateAdmin(admin.ModelAdmin):
     readonly_fields = ['request']
+
+class HospitalAdmin(admin.ModelAdmin):
+    list_filter = ('district',)
+    list_display = ('district', 'name', 'officer', 'designation','landline','mobile','email')
+    search_fields = ['name']
+ 
+
+class CollectionCenterAdmin(admin.ModelAdmin):
+    list_filter = ('district',)
+    search_fields = ['name']
+    actions = ['download_csv']
+
+    def download_csv(self, request, queryset):
+        header_row = ('name' , 'address' , 'contacts', 'type_of_materials_collecting' , 'district' , 'lsg_type','lsg_name','ward_name','is_inside_kerala' , 'city','added_at','map_link')
+        body_rows = []
+        collection_centers = queryset.all()
+        for cc in collection_centers:
+            row = [getattr(cc, field) for field in header_row]
+            body_rows.append(row)
+
+        response = create_csv_response('Collection_Centers', header_row, body_rows)
+        return response
+ 
+class PrivateRescueCampAdmin(admin.ModelAdmin):
+    list_filter = ('district','status')
+    search_fields = ['name','location']
 
 
 class CsvBulkUploadAdmin(admin.ModelAdmin):
@@ -262,15 +306,14 @@ class CsvBulkUploadAdmin(admin.ModelAdmin):
 admin.site.register(Request, RequestAdmin)
 admin.site.register(Volunteer, VolunteerAdmin)
 admin.site.register(Contributor, ContributorAdmin)
-admin.site.register(DistrictNeed)
-admin.site.register(PrivateRescueCamp)
-admin.site.register(DistrictCollection)
-admin.site.register(DistrictManager)
-admin.site.register(CollectionCenter)
+admin.site.register(DistrictNeed,DistrictNeedAdmin)
+admin.site.register(PrivateRescueCamp,PrivateRescueCampAdmin)
+admin.site.register(DistrictCollection,DistrictCollectionAdmin)
+admin.site.register(DistrictManager,DistrictManagerAdmin)
+admin.site.register(CollectionCenter,CollectionCenterAdmin)
 admin.site.register(RescueCamp, RescueCampAdmin)
 admin.site.register(NGO, NGOAdmin)
 admin.site.register(Announcements, AnnouncementAdmin)
 admin.site.register(Person, PersonAdmin)
 admin.site.register(DataCollection, DataCollectionAdmin)
-admin.site.register(CsvBulkUpload, CsvBulkUploadAdmin)
-admin.site.register(RequestUpdate, RequestUpdateAdmin)
+admin.site.register(Hospital,HospitalAdmin)

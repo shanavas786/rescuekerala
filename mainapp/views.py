@@ -20,6 +20,8 @@ from django.contrib import admin
 from django.shortcuts import redirect, get_object_or_404
 from django.db.models import Count, QuerySet
 from django.db.models import Case, When, Sum, F
+from django.db.models.expressions import Value
+from django.db.models import CharField
 from django.core.cache import cache
 from django.conf import settings
 from django.contrib.auth.decorators import login_required
@@ -31,8 +33,10 @@ from mainapp.admin import create_csv_response
 import csv
 from dateutil import parser
 import calendar
-from mainapp.models import CollectionCenter
+from mainapp.models import CollectionCenter, Hospital
 from collections import OrderedDict
+import urllib.request, json 
+
 
 
 class CustomForm(forms.ModelForm):
@@ -207,6 +211,32 @@ class NgoVolunteerView(TemplateView):
     template_name = "ngo_volunteer.html"
 
 
+class MedicalView(TemplateView):
+    template_name = "medical_info.html"
+
+
+class NhmDpmView(TemplateView):
+    template_name = "nhm_dpm.html"
+
+    def get_context_data(self, *args, **kwargs):
+        context = super(NhmDpmView, self).get_context_data(*args, **kwargs)
+        context['data'] = [ ['Thiruvananthapuram', 'Dr Arun PV', '9946105471'],
+                            ['Kollam', 'Dr Harikumar', '9946105474'],
+                            ['Pathanamthitta', 'Dr Abey Sushan', '9946105476'],
+                            ['Alappuzha', 'Dr Radhakrishnan', '9946105478'],
+                            ['Kottayam', 'Dr Vyas Sukumaran', '9946105480'],
+                            ['Idukki', 'Dr Sujith Sukumaran', '9946105482'],
+                            ['Ernakulam', 'Dr Mathews Numpeli', '9946777951'],
+                            ['Thrissur', 'Dr Satheeshan','9946105486'],
+                            ['Palakkad', 'Dr Rachana', '9946105488'],
+                            ['Malappuram', 'Dr Shibulal', '9946105490'],
+                            ['Kozhikode', 'Dr Naveen A' ,'9946105492'],
+                            ['Wayanad', 'Dr Abhilash B', '9946105494'],
+                            ['Kannur', 'Dr Latheesh KV', '9946105496'],
+                            ['Kasargod', 'Dr Raman Swathy', '8943110022'] ]
+        return context
+
+
 class MapView(TemplateView):
     template_name = "mapview.html"
 
@@ -239,9 +269,7 @@ class DistNeeds(TemplateView):
     template_name = "mainapp/district_needs.html"
 
     def get_context_data(self, **kwargs):
-        # Call the base implementation first to get a context
         context = super().get_context_data(**kwargs)
-        # Add in a QuerySet of all the books
         context['district_data'] = DistrictNeed.objects.all()
         return context
 
@@ -486,23 +514,28 @@ def dmotal(request):
     if dist == -1:
         return render(request, "dmotal.html")
     camp_qs = RescueCamp.objects.filter(status='active')
-    if dist != "all":
-        data = camp_qs.filter(district=dist)
     distmapper = dict(districts)
-    camps_by_taluk = camp_qs.values('taluk').annotate(
-        total_people=Sum('total_people'), total_male=Sum('total_males'),
-        total_female=Sum('total_females'), total_infant=Sum('total_infants'),
-        total_medical=Count(Case(
-            # Empty strings with or w/o spaces.
-            When(medical_req__regex=r'^[ ]*$', then=1),
-            # Null strings.
-            When(medical_req__isnull=True, then=1))),
-        total_camp=Count('id'), district=Value(distmapper[dist], CharField())
-    ).annotate(
-        # We wanted non-empty, non-null strings but counted the opposite. Reverse now.
-        total_medical=F('total_camp')-F('total_medical')
-    )
-    return render(request, "dmotal.html", {"camps": list(camps_by_taluk)})
+    if dist != "all":
+        queryset = [dist]
+    else:
+        queryset = list(distmapper.keys())
+    camps_by_taluk = []
+    for query in queryset:
+        camps = camp_qs.filter(district=query)
+        camps_by_taluk += list(camps.values('taluk').annotate(
+            total_people=Sum('total_people'), total_male=Sum('total_males'),
+            total_female=Sum('total_females'), total_infant=Sum('total_infants'),
+            total_medical=Count(Case(
+                # Empty strings with or w/o spaces.
+                When(medical_req__regex=r'^[ ]*$', then=1),
+                # Null strings.
+                When(medical_req__isnull=True, then=1))),
+            total_camp=Count('id'), district=Value(distmapper[query], CharField())
+        ).annotate(
+            # We wanted non-empty, non-null strings but counted the opposite. Reverse now.
+            total_medical=F('total_camp')-F('total_medical')
+        ))
+    return render(request, "dmotal.html", {"camps": camps_by_taluk})
 
 def dmocsv(request):
     if("district" not in request.GET.keys()):return HttpResponseRedirect("/")
@@ -744,16 +777,50 @@ def find_people(request):
 
     return render(request, 'mainapp/people.html', {'filter': filter , "data" : people })
 
+#Get unique hashtags from items in DB
+def get_hashtags(announcement_obj):
+    hashtags_str = ""
+    for i in (announcement_obj.objects.all().values_list('hashtags', flat=True)):
+        if i !='':
+            hashtags_str = hashtags_str +","+i
+    hashtags = list(set([j.strip() for j in hashtags_str.strip(',').split(',')]))
+    return hashtags
+
 def announcements(request):
     link_data = Announcements.objects.filter(is_pinned=False).order_by('-id').all()
     pinned_data = Announcements.objects.filter(is_pinned=True).order_by('-id').all()[:5]
     # As per the discussions orddering by id hoping they would be addded in order
+
+    hashtags = get_hashtags(Announcements)
     paginator = Paginator(link_data, 10)
     page = request.GET.get('page')
     link_data = paginator.get_page(page)
     return render(request, 'announcements.html', {'filter': filter, "data" : link_data,
-                                                  'pinned_data': pinned_data})
+                                                  'pinned_data': pinned_data, 'hashtags':hashtags})
 
+
+def announcements_id(request,id):
+    link_data = Announcements.objects.filter(id=id).all()
+
+    hashtags = get_hashtags(Announcements)
+    paginator = Paginator(link_data, 10)
+    page = request.GET.get('page')
+    link_data = paginator.get_page(page)
+    return render(request, 'announcements.html', {"data" : link_data, 'hashtags':hashtags, 'id': id})
+
+
+# Function to filter announcements based on hashtag
+def announcements_filter(request,filter_):
+    link_data = Announcements.objects.filter(hashtags__icontains=filter_).order_by('-id').all()
+    # Uncomment next line if you want to show pinned data in filtered view and add pinned data in render JSON
+    # pinned_data = Announcements.objects.filter(is_pinned=True).order_by('-id').all()[:5]
+
+    hashtags = get_hashtags(Announcements)
+    paginator = Paginator(link_data, 10)
+    page = request.GET.get('page')
+    link_data = paginator.get_page(page)
+    return render(request, 'announcements.html', {'filter': filter, "data" : link_data,
+                                                  'hashtags':hashtags,'selected_hashtag':filter_.strip()})
 
 class CoordinatorCampFilter(django_filters.FilterSet):
     class Meta:
@@ -905,6 +972,42 @@ class CollectionCenterFilter(django_filters.FilterSet):
         if self.data == {}:
             self.queryset = self.queryset.none()
 
+class HospitalViewFitler(django_filters.FilterSet):
+    class Meta:
+        model = Hospital
+        fields = OrderedDict()
+        fields['name'] = ['icontains']
+        fields['designation'] = ['icontains']
+        fields['district'] = ['exact']
+
+
+    # def __init__(self, *args, **kwargs):
+    #     super(HospitalViewFitler, self).__init__(*args, **kwargs)
+    #     if self.data == {}:
+    #         self.queryset = self.queryset.none()
+
+
+class HospitalForm(forms.ModelForm):
+    class Meta:
+        model = Hospital
+        fields = ['name', 'designation', 'district']
+
+class HospitalView(ListView):
+    model = Hospital
+    success_url = '/hospitals/'
+    paginate_by = 50
+    template_name = 'mainapp/hospitals.html'
+    queryset = Hospital.objects.order_by('-id')
+
+    def get_context_data(self, **kwargs):
+        filtered_list = HospitalViewFitler(
+                self.request.GET, queryset=self.get_queryset())
+        kwargs['object_list'] = filtered_list.qs
+        context = super().get_context_data(**kwargs)
+        filtered_list._qs = context['object_list']
+
+        context['filter'] = filtered_list
+        return context
 
 class CollectionCenterListView(ListView):
     model = CollectionCenter
@@ -947,3 +1050,19 @@ class CollectionCenterView(CreateView):
     model = CollectionCenter
     form_class = CollectionCenterForm
     success_url = '/collection_centers/'
+
+
+def announcement_api(request):
+    objects = Announcements.objects
+    data = list(objects.values())
+    return JsonResponse({"announcements" : data})
+
+
+def contribute(request):
+    return render(request, 'mainapp/contribute.html')
+
+import requests
+
+def fbannouncements(request):
+    r = requests.get("http://m.afterflood.in/api")
+    return render(request,"socannouncements.html",{"data" :r.json() })

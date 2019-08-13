@@ -15,23 +15,41 @@
         <i>An initiative by Govt. of Kerala, Kerala State IT Mission and IEEE Kerala Section<br>
         For effective collaboration and communications between authorities, volunteers and public </i><br/>
         <strong><span class="notranslate">ദുരിതാശ്വാസ പ്രവർത്തനങ്ങളും രക്ഷാ ദൗത്യങ്ങളും ഏകോപിപ്പിക്കാൻ</span></strong><br/>
-          <a class="btn btn-info btn-msg" href="{% static 'images/msg_cm.jpg' %}">Message from Hon. Chief Minister of Kerala</a>
+          <!-- <a class="btn btn-info btn-msg" href="{% static 'images/msg_cm.jpg' %}">Message from Hon. Chief Minister of Kerala</a> -->
           <a class="btn btn-info btn-msg" href="https://donation.cmdrf.kerala.gov.in/">Donate to Chief Minister's Fund Online</a>
-  </p>
+
+        </p>
+    <p>
+        <a class="btn btn-danger btn-msg" href="{%url 'Announcements' %}">{% bootstrap_icon "bullhorn" %} Announcements (<span class="ml notranslate">അറിയിപ്പുകൾ</span>)</a>
+        <a class="btn btn-info btn-msg" href="https://afterflood.in">After Flood Resources</a>
+    </p>
   <a href="https://keralarescuemap.ushahidi.io/posts/create/17" class="home-button card" role="button">
-        {% bootstrap_icon "grain" %}
-        <span class="text">
-            Request<br/>for rescue<br/>
-            <span class="ml small notranslate">രക്ഷാപ്രവർത്തനം അഭ്യർത്ഥിക്കാൻ</span>
-        </span>
-    </a>
-    <a href="{%url 'report_find_person' %}" class="home-button card" role="button">
+    {% bootstrap_icon "bell" %}
+    <span class="text">
+        Request<br/>for rescue<br/>
+        <span class="ml small notranslate">രക്ഷാപ്രവർത്തനം അഭ്യർത്ഥിക്കാൻ</span>
+    </span>
+</a>  <a href="https://keralarescuemap.ushahidi.io/posts/create/18" class="home-button card" role="button">
+    {% bootstrap_icon "grain" %}
+    <span class="text">
+        Request<br/>for resources<br/>
+        <span class="ml small notranslate">സഹായം അഭ്യർത്ഥിക്കാൻ</span>
+    </span>
+</a>
+<a href="{%url 'contribute' %}" class="home-button card" role="button">
+    {% bootstrap_icon "apple" %}
+    <span class="text">
+        Contribute<br/>
+        <span class="ml small notranslate">സഹായങ്ങൾ</span>
+    </span>
+</a>
+    <!-- <a href="{%url 'report_find_person' %}" class="home-button card" role="button">
         {% bootstrap_icon "user" %}
         <span class="text">
             Missing Person/<br />Find Person<br/>
                 <span class="ml small notranslate">വ്യക്തിയെ തിരയുക/<br/>കാണാതായ വ്യക്തികളെ <br/>റിപ്പോർട്ട് ചെയ്യുക</span>
         </span>
-    </a>
+    </a> -->
     <a href="{%url 'relief_camps' %}" class="home-button card" role="button">
         {% bootstrap_icon "home" %}
         <span class="text">
@@ -39,13 +57,20 @@
           <span class="ml small notranslate">ദുരിതാശ്വാസ ക്യാമ്പുകൾ</span>
         </span>
     </a>
-    <a href="{%url 'reg_contribview' %}" class="home-button card" role="button">
-        {% bootstrap_icon "apple" %}
-        <span class="text">
-            To Contribute<br/>
-            <span class="ml small notranslate">സംഭാവന നൽകാൻ</span>
-        </span>
-    </a>
+    <a href="{%url 'Announcements' %}" class="home-button card" role="button">
+            {% bootstrap_icon "bullhorn" %}
+            <span class="text">
+            Announcements<br/>
+                <span class="ml small notranslate">അറിയിപ്പുകൾ</span>
+            </span>
+        </a>
+    <a href="{%url 'social_media_announcements' %}" class="home-button card" role="button">
+            {% bootstrap_icon "bullhorn" %}
+            <span class="text">
+            Public information Feed<br/>
+                <span class="ml small notranslate">പൊതു വിവര ഫീഡ്</span>
+            </span>
+        </a>
     <a href="{%url 'distneedsview' %}" class="home-button card" role="button">
         {% bootstrap_icon "map-marker" %}
         <span class="text">
@@ -60,11 +85,11 @@
             <span class="ml small notranslate">വൊളന്‍റീയര &amp;<br/> എൻജിഒ്/കമ്പനി‍ </span>
         </span>
     </a>
-    <a href="{%url 'mapview' %}" class="home-button card" role="button">
+     <a href="https://map.keralarescue.in/" class="home-button card" role="button">
         {% bootstrap_icon "globe" %}
         <span class="text">
-            Maps<br/>
-            <span class="ml small notranslate">സഹായം ആവശ്യമായ സ്ഥലങ്ങളും<br/>ദുരിതാശ്വാസ ക്യാമ്പുകളും</span>
+            Flood Map<br/>
+           <!-- <span class="ml small notranslate">സഹായം ആവശ്യമായ സ്ഥലങ്ങളും<br/>ദുരിതാശ്വാസ ക്യാമ്പുകളും</span>-->
         </span>
     </a>
     <a href="{% url 'contactus' %}" class="home-button card" role="button">
@@ -81,11 +106,11 @@
         <span class="ml small notranslate">ഇതു വരെ ആവശ്യപ്പെട്ടവ</span>
       </span>
     </a>
-    <a href="{%url 'Announcements' %}" class="home-button card" role="button">
-        {% bootstrap_icon "bullhorn" %}
+    <a href="{%url 'medicalview' %}" class="home-button card" role="button">
+        {% bootstrap_icon "plus" %}
         <span class="text">
-        Announcements<br/>
-            <span class="ml small notranslate">അറിയിപ്പുകൾ</span>
+        Medical Information<br/>
+            <span class="ml small notranslate">ചികിത്സാ സംബന്ധമായ വിവരങ്ങൾ</span>
         </span>
     </a>
     <a href="{%url 'privatedetails' %}" class="home-button card" role="button">
@@ -96,13 +121,14 @@
         </span>
     </a>
     <p class="home-info">
-        Contact Control Room or Disaster Management Cell or District Administration for any support.<br>
+            For emergency support, call the District control room at <b>1077</b> or the State control room at <b>1070</b>.<br>
         Volunteers may contact District Project Managers for support related to volunteering and contributions<br>
         <br/>
-        <span class="notranslate">സഹായത്തിനായി സന്നദ്ധ സേവകർ തയ്യാറാണ്. സഹായം ആവശ്യമെങ്കിൽ ഒരോ ജില്ലയിലെയും നിയോഗിക്കപെട്ട ഉദ്യോഗസ്ഥരുമായി ബന്ധപ്പെടാം</span>
+        <span class="notranslate">സഹായത്തിനായി സന്നദ്ധ സേവകർ തയ്യാറാണ്. <br> സഹായം ആവശ്യമെങ്കിൽ വിളിക്കുക: ജില്ലാ കൺട്രോൾ റൂം: <b>1077</b> , സംസ്ഥാന കൺട്രോൾ റൂം: <b>1070</b> </span>
     </p>
+     <br>
   <p class="slack">
-       Our Collaboration Platform (Slack) <a href="https://bit.ly/Keralarescuechat">Join</a>
+       Our Collaboration Platform (Slack) <a href="http://bit.ly/rescuechat">Join</a>
   </p>
 </div>
 {% endblock %}

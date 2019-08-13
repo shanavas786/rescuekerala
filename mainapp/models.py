@@ -174,7 +174,7 @@ class Request(models.Model):
         if(self.needkit_util):
             out += "\nKit Requirements :\n {}".format(self.detailkit_util)
         if(self.needrescue):
-            out += "\nRescue Action :\n {}".format(self.detailrescue)    
+            out += "\nRescue Action :\n {}".format(self.detailrescue)
         if(len(self.needothers.strip()) != 0):
             out += "\nOther Needs :\n {}".format(self.needothers)
         return out
@@ -309,10 +309,11 @@ class DistrictNeed(models.Model):
     )
     needs = models.TextField(verbose_name="Items required")
     cnandpts = models.TextField(verbose_name="Contacts and collection points") #contacts and collection points
+    inventory = models.TextField()
 
     class Meta:
-        verbose_name = 'District: Need'
-        verbose_name_plural = 'District: Needs'
+        verbose_name = 'District: Need and Collection center'
+        verbose_name_plural = 'District: Needs and Collection centers'
 
     def __str__(self):
         return self.get_district_display()
@@ -550,6 +551,7 @@ class Announcements(models.Model):
         default='L')
 
     description = models.TextField(blank=True)
+    hashtags = models.TextField(blank=True,default="",help_text="Add hashtags as comma separated values.")
     image = models.ImageField(blank=True, upload_to=upload_to)
     upload = models.FileField(blank=True, upload_to=upload_to)
     is_pinned = models.BooleanField(default=False)
@@ -574,8 +576,8 @@ class DataCollection(models.Model):
     tag = models.CharField(max_length=255, null=True, blank=True)
 
     class Meta:
-        verbose_name = 'Data: Collection'
-        verbose_name_plural = 'Data: Collections'
+        verbose_name = 'Data Uploads'
+        verbose_name_plural = 'Data Uploads'
 
     def __str__(self):
         return self.document_name
@@ -635,6 +637,9 @@ class CollectionCenter(models.Model):
     added_at = models.DateTimeField(auto_now_add=True)
     map_link = models.TextField( verbose_name='Map(Cordinate links) link',blank=True,null=True,help_text="Copy and paste the full Google Maps link")
 
+    class Meta:
+        verbose_name = 'Private collection centers'
+
     def __str__(self):
         return self.name
 
@@ -674,3 +679,22 @@ class CsvBulkUpload(models.Model):
 
     def __str__(self):
         return self.name
+
+class Hospital(models.Model):
+    district = models.CharField(
+        max_length = 15,
+        choices = districts,
+        verbose_name="District - ജില്ല",
+        null=True,
+        blank=True
+    )
+    name = models.CharField(max_length=200)
+    officer = models.CharField(max_length=100)
+    designation = models.CharField(max_length=250, verbose_name="Officer name")
+    phone_number_regex = RegexValidator(regex='^((\+91|91|0)[\- ]{0,1})?[456789]\d{9}$', message='Please Enter 10/11 digit mobile number or landline as 0<std code><phone number>', code='invalid_mobile')
+    landline = models.CharField(max_length=14, validators=[phone_number_regex])
+    mobile = models.CharField(max_length=14, validators=[phone_number_regex])
+    email = models.EmailField()
+
+    def __str__(self):
+        return self.name + ' - ' + self.designation      

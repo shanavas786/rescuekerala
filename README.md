@@ -2,9 +2,9 @@
 
 [![Build Status - Travis][0]][1] [![Open Source Helpers](https://www.codetriage.com/ieeekeralasection/rescuekerala/badges/users.svg)](https://www.codetriage.com/ieeekeralasection/rescuekerala)
 
-<p align="center">The Website for co-ordinating the rehabilitation of the people affected in the 2018 Kerala Floods.</p>
+<p align="center">The Website for co-ordinating the rehabilitation of the people affected in the Kerala Floods.</p>
 
-[![Join Kerala Rescue Slack channel](https://i.imgur.com/V7jxjak.png)](http://bit.ly/Keralarescuechat)
+[![Join Kerala Rescue Slack channel](https://i.imgur.com/V7jxjak.png)](http://bit.ly/rescuechat)
 
 ## Table of Contents
 - [Requirements](#requirements)
@@ -15,6 +15,8 @@
     - [Redis](#redis)
     - [Setting up an S3 Account](#setting-up-an-s3-account)
 - [Getting started](#getting-started)
+    - [Setting up a development environment](#setting-up-a-development-environment)
+    - [Setup using docker-compose](#setup-using-docker-compose)
 - [Creating migration files](#creating-migration-files)
 - [Running tests](#running-tests)
 - [Enable HTTPS connections](#enable-https-connections)
@@ -122,6 +124,19 @@ That's it!
 </details>
 
 <hr>
+
+### Setup using docker-compose
+#### Pre-requisites
+* [Docker](https://docs.docker.com/install/)
+* [Docker Compose](https://docs.docker.com/compose/install/)
+
+Run the scripts in the root directory
+
+* `docker-start.sh` - to start the services. 
+
+* `docker-stop.sh` - to stop the services. 
+
+* `docker-restart.sh` - to rebuild and restart the services. 
 
 ### Creating migration files
 [^top](#table-of-contents)
