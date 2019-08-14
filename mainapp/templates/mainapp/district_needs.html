@@ -56,11 +56,16 @@ function copy_content_or_share(elem) {
     document.execCommand("copy");
     document.body.removeChild(tempInput);
 	if (navigator.share) {
-	navigator.share({
-      text: copy_text
-	})
-    .then(() => console.log('Successful share'))
-    .catch((error) => console.log('Error sharing', error));
+		navigator.share({
+			text: copy_text
+		})
+		.then(() => console.log('Successful share'))
+		.catch((error) => {
+			alert("Copied");
+			console.log('Error sharing', error);
+		});
+	} else {
+		alert("Copied");
 	}
 }
 </script>
