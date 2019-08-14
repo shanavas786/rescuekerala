@@ -57,7 +57,19 @@ function copy_content_or_share(elem) {
 		tempInput.select();
 		document.execCommand("copy");
 		document.body.removeChild(tempInput);
-		alert("Copied");
+		
+		//Code for temporary alert
+		//Replace with toast message if you shift to bootsrap 4
+		var tempAlert = document.createElement("div");
+		tempAlert.className="alert alert-info"; //Using bootstrap 3 alert
+		tempAlert.style = "margin-top:5px; padding: 5px; text-align:center;";
+		tempAlert.innerHTML="<strong>Copied!</strong>";
+		elem.setAttribute('onclick',''); //Temporarily disabling button to prevent dupicate alert
+		elem.parentElement.appendChild(tempAlert); //Showing alert below button
+		setTimeout(function() {
+			elem.parentElement.removeChild(tempAlert);
+			elem.setAttribute('onclick','copy_content_or_share(this);'); //Re enabling button
+		}, 2000); //Hiding after 2 seconds
 	}
 	
 	if (navigator.share) {
