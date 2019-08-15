@@ -1,5 +1,6 @@
 {% extends 'base.html' %}
 {% load bootstrap3 %}
+{% load humanize %}
 
 {% block content %}
 <!--Navigation Breadcrumbs-->
@@ -19,6 +20,7 @@
       <th>Items required</th>
       <th>Contacts & Collection points</th>
       <th>Inventory</th>
+	  <th>Modified</th>
 	  <th></th>
     </tr>
   {% for item in district_data %}
@@ -32,6 +34,9 @@
       </td>
       <td>
         {{item.inventory|linebreaks}}
+	  </td>
+	  <td>
+        {{item.date_modified|naturaltime}}
       </td>
 	  <td>
 		<button class="btn btn-primary" onclick="copy_content_or_share(this);">Share/Copy</button>

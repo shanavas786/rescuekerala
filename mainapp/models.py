@@ -310,6 +310,7 @@ class DistrictNeed(models.Model):
     needs = models.TextField(verbose_name="Items required")
     cnandpts = models.TextField(verbose_name="Contacts and collection points") #contacts and collection points
     inventory = models.TextField()
+    date_modified = models.DateTimeField(auto_now=True)
 
     class Meta:
         verbose_name = 'District: Need and Collection center'
