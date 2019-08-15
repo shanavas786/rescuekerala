@@ -48,6 +48,7 @@ function copy_content_or_share(elem) {
 	for(var i = 0;i<tds.length-1;i++) {
 		copy_text = copy_text+ths[i].innerText.toUpperCase()+'\n\n'+tds[i].innerText+'\n\n';
 	}
+	copy_text += '\nContent copied from www.keralarescue.in, official website of Govt. of Kerala'
 	
 	function copy_content() {
 		var tempInput = document.createElement("textarea");
