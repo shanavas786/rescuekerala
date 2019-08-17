@@ -201,7 +201,7 @@ LOGGING = {
     'loggers': {
         'send_sms': {
             'handlers': ['send_sms'],
-            'level': 'DEBUG',
+            'level': 'INFO',
         },
     }
 }

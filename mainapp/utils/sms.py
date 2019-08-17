@@ -33,7 +33,7 @@ def sms_sender(smsjobid, **kwargs):
         .format(district, type, area, message)
     )
 
-    volunteers = Volunteer.objects.filter(district=district, area=area, id=102988) #test id
+    volunteers = Volunteer.objects.filter(district=district, area=area)
     if type != 'consent':
         volunteers.filter(has_consented=True)
     fail_count = 0
