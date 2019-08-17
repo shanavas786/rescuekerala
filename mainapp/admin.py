@@ -6,11 +6,12 @@ from django.core.validators import EMPTY_VALUES
 from django.http import HttpResponse
 from django.http import StreamingHttpResponse
 
-from mainapp.redis_queue import bulk_csv_upload_queue
+from mainapp.redis_queue import bulk_csv_upload_queue, sms_queue
 from mainapp.csvimporter import import_inmate_file
-from .models import Request, Volunteer, Contributor, DistrictNeed, DistrictCollection, DistrictManager, vol_categories, \
-    RescueCamp, Person, NGO, Announcements, DataCollection , PrivateRescueCamp , CollectionCenter, CsvBulkUpload, RequestUpdate, \
-    Hospital
+from mainapp.utils.sms import sms_sender
+from .models import Request, Volunteer, Contributor, DistrictNeed, DistrictCollection, DistrictManager, vol_categories,\
+    RescueCamp, Person, NGO, Announcements, DataCollection , PrivateRescueCamp , CollectionCenter, CsvBulkUpload, RequestUpdate,\
+    Hospital, SmsJob
 
 """
 Helper function for streaming csv downloads
@@ -303,17 +304,28 @@ class CsvBulkUploadAdmin(admin.ModelAdmin):
     list_display = ['name', 'camp', 'is_completed']
     search_fields = ['camp__name']
 
+
+class SmsJobAdmin(admin.ModelAdmin):
+    def save_model(self, request, obj, form, change):
+        super().save_model(request, obj, form, change)
+        sms_queue.enqueue(
+            sms_sender, obj.id, **{'district': obj.district, 'type': obj.sms_type, 'message': obj.message, 'area': obj.area}
+        )
+
+    readonly_fields = ['has_completed', 'failure']
+
 admin.site.register(Request, RequestAdmin)
 admin.site.register(Volunteer, VolunteerAdmin)
 admin.site.register(Contributor, ContributorAdmin)
-admin.site.register(DistrictNeed,DistrictNeedAdmin)
-admin.site.register(PrivateRescueCamp,PrivateRescueCampAdmin)
-admin.site.register(DistrictCollection,DistrictCollectionAdmin)
-admin.site.register(DistrictManager,DistrictManagerAdmin)
-admin.site.register(CollectionCenter,CollectionCenterAdmin)
+admin.site.register(DistrictNeed, DistrictNeedAdmin)
+admin.site.register(PrivateRescueCamp, PrivateRescueCampAdmin)
+admin.site.register(DistrictCollection, DistrictCollectionAdmin)
+admin.site.register(DistrictManager, DistrictManagerAdmin)
+admin.site.register(CollectionCenter, CollectionCenterAdmin)
 admin.site.register(RescueCamp, RescueCampAdmin)
 admin.site.register(NGO, NGOAdmin)
 admin.site.register(Announcements, AnnouncementAdmin)
 admin.site.register(Person, PersonAdmin)
 admin.site.register(DataCollection, DataCollectionAdmin)
-admin.site.register(Hospital,HospitalAdmin)
+admin.site.register(Hospital, HospitalAdmin)
+admin.site.register(SmsJob, SmsJobAdmin)

@@ -87,16 +87,16 @@
 <script src="https://ajax.googleapis.com/ajax/libs/jquery/1.9.1/jquery.min.js"></script>
 
 <script>
-	// $(".consent").click(function(event) {
-	// 	var consent = $(this).attr('data-consent');
-	// 	if(consent === 'confirm') {
-	// 		$("[name=has_consented]").prop("checked", true);
-	// 	} else if(consent === 'cancel'){
-	// 		$("[name=has_consented]").prop("checked", false);
-	// 	}
+	$(".consent").click(function(event) {
+		var consent = $(this).attr('data-consent');
+		if(consent === 'confirm') {
+			$("[name=has_consented]").prop("checked", true);
+		} else if(consent === 'cancel'){
+			$("[name=has_consented]").prop("checked", false);
+		}
 		
-	// 	$("#volunteer_consent_form").submit();
-	// })
+		$("#volunteer_consent_form").submit();
+	})
 
 	$('#submit_btn').click(function (){
 		if(!$('#register_consent').is(":checked")){
@@ -108,10 +108,10 @@
 	
 	
 
-	// $( "#volunteer_consent_form" ).submit(function( event ) {
-	//   alert( "Handler for .submit() called." );
-	//   
-	// })
+	$( "#volunteer_consent_form" ).submit(function( event ) {
+	  alert( "Handler for .submit() called." );
+	  
+	})
     
     window.addEventListener('load', function() {
         $("#id_phone").attr('type', 'number');

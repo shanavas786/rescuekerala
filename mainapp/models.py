@@ -110,6 +110,7 @@ contribution_types = (
     ('oth', 'Others')
 )
 
+
 class LSGTypes(Enum):
     CORPORATION = 0
     MUNICIPALITY = 1
@@ -192,8 +193,8 @@ class Request(models.Model):
 
 class Volunteer(models.Model):
     district = models.CharField(
-        max_length = 15,
-        choices = districts,
+        max_length=15,
+        choices=districts,
         verbose_name="District - ജില്ല"
     )
     name = models.CharField(max_length=100, verbose_name="Name - പേര്")
@@ -692,10 +693,48 @@ class Hospital(models.Model):
     name = models.CharField(max_length=200)
     officer = models.CharField(max_length=100)
     designation = models.CharField(max_length=250, verbose_name="Officer name")
-    phone_number_regex = RegexValidator(regex='^((\+91|91|0)[\- ]{0,1})?[456789]\d{9}$', message='Please Enter 10/11 digit mobile number or landline as 0<std code><phone number>', code='invalid_mobile')
+    phone_number_regex = RegexValidator(regex='^((\+91|91|0)[\- ]{0,1})?[456789]\d{9}$',
+                                        message='Please Enter 10/11 digit mobile number or landline as 0<std code><phone number>',
+                                        code='invalid_mobile')
     landline = models.CharField(max_length=14, validators=[phone_number_regex])
     mobile = models.CharField(max_length=14, validators=[phone_number_regex])
     email = models.EmailField()
 
     def __str__(self):
         return self.name + ' - ' + self.designation      
+
+
+class SmsJob(models.Model):
+    """
+    Sends sms to volunteers for now. In the future I plan to implement something that can send sms to other models,
+    like NGOs and Contributors
+    """
+    SMS_CHOICES = (
+        ('consent', 'Consent'),
+        ('info', 'Information')
+    )
+    AREA_CHOICES = (
+        ('dcr', 'Doctor'),
+        ('hsv', 'Health Services'),
+        ('elw', 'Electrical Works'),
+        ('mew', 'Mechanical Work'),
+        ('cvw', 'Civil Work'),
+        ('plw', 'Plumbing work'),
+        ('vls', 'Vehicle Support'),
+        ('ckg', 'Cooking'),
+        ('rlo', 'Relief operation'),
+        ('cln', 'Cleaning'),
+        ('bot', 'Boat Service'),
+        ('rck', 'Rock Climbing'),
+        ('oth', 'Other')
+    )
+    district = models.CharField(choices=districts, max_length=3)
+    sms_type = models.CharField(choices=SMS_CHOICES, max_length=10)
+    area = models.CharField(choices=AREA_CHOICES, max_length=3)
+    message = models.CharField(max_length=160, null=True, blank=True, help_text='This will only be used for \
+    informational messages. For consent messages, a preconfigured message is used')
+    failure = models.CharField(max_length=100, null=True, blank=True)
+    has_completed = models.BooleanField(default=False)
+
+    def __str__(self):
+        return self.get_district_display() + '-' + self.get_area_display() + '-' + self.get_sms_type_display()
