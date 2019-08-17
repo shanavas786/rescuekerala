@@ -56,7 +56,7 @@ def sms_sender(smsjobid, **kwargs):
         if "402" not in response.text:
             fail_count += 1
 
-    smsjob.failure = "{} sms failed".format(fail_count)
+    smsjob.failure = "{} sms failed out of {}".format(fail_count, volunteers.count())
     logger.info(smsjob.failure)
     smsjob.has_completed = True
     smsjob.save()
