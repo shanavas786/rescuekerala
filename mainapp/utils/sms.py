@@ -33,11 +33,14 @@ def sms_sender(smsjobid, **kwargs):
         'Starting sms job.\nDistrict: {}, Type: {}, Area: {}, Message: {} , Group: {}'
         .format(str(district), str(type) , str(area), str(message),str(group) )
     )
-    if(group == None):
-        volunteers = Volunteer.objects.filter(district=district, area=area)
-    elif(district == None and area == None):
-        volunteers = Volunteer.objects.filter(groups__in=[group])
-    else:
+    volunteers = Volunteer.objects.all()
+    if(district != None):
+        volunteers = volunteers.filter(district=district)
+    if(area != None):
+        volunteers = volunteers.filter(area=area)
+    if(group != None):
+        volunteers = volunteers.filter(groups__in=[group])
+    if(district == None and area == None and group == None ):
         smsjob.failure = "Incorrect Information Provided"
         logger.info(smsjob.failure)
         smsjob.has_completed = True
