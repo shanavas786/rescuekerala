@@ -48,12 +48,14 @@ def sms_sender(smsjobid, **kwargs):
         volunteers.filter(has_consented=True)
     fail_count = 0
     for volunteer in volunteers:
-        if type == 'consent':
+        if type == 'consent' or type == 'survey':
             timestamp = parser.parse(str(volunteer.joined))
             timestamp = calendar.timegm(timestamp.utctimetuple())
             # Preparing unique URL
             url = 'http://keralarescue.in/c/' + str(volunteer.id) + "/" + str(timestamp)[-4:]
             message = "Thank you for registering as a volunteer on keralarescue. Please click here to confirm. " + url
+            if type == 'survey':
+                message = "Thanks keralarescue volunteer if willing to conduct damage assessment field survey, Pls click on the link to confirm. " + url
         payload = {
             'username': API_USERNAME,
             'password': API_PASSWORD,

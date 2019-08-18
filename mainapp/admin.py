@@ -89,15 +89,15 @@ class RequestAdmin(admin.ModelAdmin):
         return response
 
 def add_to_group(group):
-    def assign_to_user(modeladmin, request, queryset):
+    def assign_group(modeladmin, request, queryset):
         for volunteer in queryset:
-            volunteer.groups.add(group)
-            
-    assign_to_user.short_description = "Add to Group {}".format(group.group_name)
+            volunteer.groups.add(group)    
 
-    assign_to_user.__name__ = 'Add to Group {}'.format(group.group_name)
+    assign_group.short_description = "Add to Group {}".format(group.group_name)
 
-    return assign_to_user
+    assign_group.__name__ = 'Add to Group {}'.format(group.group_name)
+
+    return assign_group
 
 
 class VolunteerAdmin(admin.ModelAdmin):

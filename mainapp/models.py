@@ -719,7 +719,8 @@ class SmsJob(models.Model):
     """
     SMS_CHOICES = (
         ('consent', 'Consent'),
-        ('info', 'Information')
+        ('info', 'Information'),
+        ('survey',"Survey")
     )
     AREA_CHOICES = (
         ('dcr', 'Doctor'),
