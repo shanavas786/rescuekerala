@@ -11,7 +11,7 @@ from mainapp.csvimporter import import_inmate_file
 from mainapp.utils.sms import sms_sender
 from .models import Request, Volunteer, Contributor, DistrictNeed, DistrictCollection, DistrictManager, vol_categories,\
     RescueCamp, Person, NGO, Announcements, DataCollection , PrivateRescueCamp , CollectionCenter, CsvBulkUpload, RequestUpdate,\
-    Hospital, SmsJob
+    Hospital, SmsJob , VolunteerGroup
 
 """
 Helper function for streaming csv downloads
@@ -309,7 +309,7 @@ class SmsJobAdmin(admin.ModelAdmin):
     def save_model(self, request, obj, form, change):
         super().save_model(request, obj, form, change)
         sms_queue.enqueue(
-            sms_sender, obj.id, **{'district': obj.district, 'type': obj.sms_type, 'message': obj.message, 'area': obj.area}
+            sms_sender, obj.id, **{'district': obj.district, 'type': obj.sms_type, 'message': obj.message, 'area': obj.area ,'group' : obj.group}
         )
 
     readonly_fields = ['has_completed', 'failure']
@@ -329,3 +329,4 @@ admin.site.register(Person, PersonAdmin)
 admin.site.register(DataCollection, DataCollectionAdmin)
 admin.site.register(Hospital, HospitalAdmin)
 admin.site.register(SmsJob, SmsJobAdmin)
+admin.site.register(VolunteerGroup)

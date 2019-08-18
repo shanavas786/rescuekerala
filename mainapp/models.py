@@ -191,6 +191,13 @@ class Request(models.Model):
         return self.dateadded < (timezone.now() - timezone.timedelta(days=2))
 
 
+class VolunteerGroup(models.Model):
+    group_name = models.CharField(max_length = 200)
+
+    def __str__(self):
+        return str(self.group_name)
+
+
 class Volunteer(models.Model):
     district = models.CharField(
         max_length=15,
@@ -213,6 +220,7 @@ class Volunteer(models.Model):
     joined = models.DateTimeField(auto_now_add=True)
     is_active = models.BooleanField(default=True)
     has_consented = models.BooleanField(default=False, verbose_name="Available")
+    groups = models.ManyToManyField(VolunteerGroup)
 
     class Meta:
         verbose_name = 'Volunteer: Individual'
@@ -728,13 +736,24 @@ class SmsJob(models.Model):
         ('rck', 'Rock Climbing'),
         ('oth', 'Other')
     )
-    district = models.CharField(choices=districts, max_length=3)
+    district = models.CharField(choices=districts, max_length=3 , blank=True,null=True)
     sms_type = models.CharField(choices=SMS_CHOICES, max_length=10)
-    area = models.CharField(choices=AREA_CHOICES, max_length=3)
+    area = models.CharField(choices=AREA_CHOICES, max_length=3, blank=True ,null=True)
+    group = models.ForeignKey(VolunteerGroup , models.CASCADE , null=True , blank=True)
     message = models.CharField(max_length=160, null=True, blank=True, help_text='This will only be used for \
     informational messages. For consent messages, a preconfigured message is used')
     failure = models.CharField(max_length=100, null=True, blank=True)
     has_completed = models.BooleanField(default=False)
-
+    
     def __str__(self):
-        return self.get_district_display() + '-' + self.get_area_display() + '-' + self.get_sms_type_display()
+        mess = ""  
+        if self.sms_type == "info":
+            mess = "Message {} sent to ".format(self.message)
+        else:
+            mess = "Consent Message sent to "
+        if(self.district != None and self.area != None):
+            return mess + self.get_district_display() + '-' + self.get_area_display() 
+        else:
+            return mess + "Sent to Group :" + str(self.group)
+
+

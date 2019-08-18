@@ -27,13 +27,23 @@ def sms_sender(smsjobid, **kwargs):
     type = kwargs['type']
     area = kwargs['area']
     message = kwargs['message']
+    group = kwargs['group']
 
     logger.info(
-        'Starting sms job.\nDistrict: {}, Type: {}, Area: {}, Message: {}'
-        .format(district, type, area, message)
+        'Starting sms job.\nDistrict: {}, Type: {}, Area: {}, Message: {} , Group: {}'
+        .format(str(district), str(type) , str(area), str(message),str(group) )
     )
-
-    volunteers = Volunteer.objects.filter(district=district, area=area)
+    if(group == None):
+        volunteers = Volunteer.objects.filter(district=district, area=area)
+    elif(district == None and area == None):
+        volunteers = Volunteer.objects.filter(groups__in=[group])
+    else:
+        smsjob.failure = "Incorrect Information Provided"
+        logger.info(smsjob.failure)
+        smsjob.has_completed = True
+        smsjob.save()    
+        return 
+    logger.info("Filtered out {} Volunteers ".format(volunteers.count()))
     if type != 'consent':
         volunteers.filter(has_consented=True)
     fail_count = 0
