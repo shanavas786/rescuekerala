@@ -104,7 +104,7 @@ class VolunteerAdmin(admin.ModelAdmin):
     actions = ['download_csv', 'mark_inactive', 'mark_active']
     readonly_fields = ('joined',)
     list_display = ('name', 'phone', 'organisation', 'joined', 'is_active')
-    list_filter = ('district', 'joined', 'is_active', 'has_consented', 'area')
+    list_filter = ('district', 'joined', 'is_active', 'has_consented', 'area','groups')
     search_fields = ['name','phone','area']
 
     def download_csv(self, request, queryset):
