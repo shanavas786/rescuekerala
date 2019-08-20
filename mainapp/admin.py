@@ -6,12 +6,15 @@ from django.core.validators import EMPTY_VALUES
 from django.http import HttpResponse
 from django.http import StreamingHttpResponse
 
-from mainapp.redis_queue import bulk_csv_upload_queue, sms_queue
+from mainapp.redis_queue import bulk_csv_upload_queue, sms_queue , volunteer_group_queue
 from mainapp.csvimporter import import_inmate_file
 from mainapp.utils.sms import sms_sender
 from .models import Request, Volunteer, Contributor, DistrictNeed, DistrictCollection, DistrictManager, vol_categories,\
     RescueCamp, Person, NGO, Announcements, DataCollection , PrivateRescueCamp , CollectionCenter, CsvBulkUpload, RequestUpdate,\
     Hospital, SmsJob , VolunteerGroup
+
+from mainapp.utils.volunteer_group_adder import async_volunteer_group_adder
+
 
 """
 Helper function for streaming csv downloads
@@ -90,8 +93,11 @@ class RequestAdmin(admin.ModelAdmin):
 
 def add_to_group(group):
     def assign_group(modeladmin, request, queryset):
-        for volunteer in queryset:
-            volunteer.groups.add(group)    
+        volunteer_group_queue.enqueue(
+            async_volunteer_group_adder , group , queryset
+        )
+        #for volunteer in queryset:
+        #    volunteer.groups.add(group)    
 
     assign_group.short_description = "Add to Group {}".format(group.group_name)
 
