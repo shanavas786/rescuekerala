@@ -195,7 +195,7 @@ class VolunteerGroup(models.Model):
     group_name = models.CharField(max_length = 200)
 
     def __str__(self):
-        return str(self.group_name)
+        return "Group Name " + str(self.group_name) + " || Volunteer Count " + str(Volunteer.objects.all().filter(groups__in=[self]).count())
 
 
 class Volunteer(models.Model):
